@@ -60,7 +60,7 @@ The project is currently in Phase 1: repository and engineering standards.
 
 1. Architecture and business definition
 2. Repository and engineering standards
-3. Data contracts
+3. Data contracts (contrats data)
 4. Data generation
 5. Local Docker platform
 6. Batch ingestion
