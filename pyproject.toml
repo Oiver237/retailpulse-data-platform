@@ -1,0 +1,92 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "retailpulse"
+version = "0.1.0"
+description = "Hybrid local and AWS data platform for omnichannel retail analytics"
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+license = { text = "MIT" }
+authors = [
+    { name = "RetailPulse Contributors" }
+]
+keywords = [
+    "data-engineering",
+    "data-platform",
+    "aws",
+    "spark",
+    "kafka",
+    "airflow",
+    "dbt"
+]
+
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "black>=24.10,<26",
+    "mypy>=1.13,<2",
+    "pre-commit>=4,<5",
+    "pytest>=8.3,<9",
+    "pytest-cov>=6,<8",
+    "ruff>=0.9,<1"
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.black]
+line-length = 88
+target-version = ["py312"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = [
+    "E",
+    "F",
+    "I",
+    "B",
+    "UP",
+    "SIM",
+    "RUF"
+]
+ignore = []
+
+[tool.ruff.lint.isort]
+known-first-party = ["retailpulse"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+mypy_path = "src"
+packages = ["retailpulse"]
+warn_unused_configs = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = [
+    "--strict-config",
+    "--strict-markers",
+    "--cov=retailpulse",
+    "--cov-report=term-missing",
+    "--cov-fail-under=80"
+]
+
+[tool.coverage.run]
+branch = true
+source = ["retailpulse"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = false
+exclude_lines = [
+    "if TYPE_CHECKING:",
+    "if __name__ == .__main__.:"
+]
