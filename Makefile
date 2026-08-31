@@ -40,6 +40,7 @@ contracts:
 	$(PYTHON) -m pytest \
 		tests/unit/test_contract_loader.py \
 		tests/unit/test_contract_validation.py \
+		tests/unit/test_payment_authorized_contract.py \
 		--no-cov
 
 coverage:

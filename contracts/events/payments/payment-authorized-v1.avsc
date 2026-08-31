@@ -1,0 +1,117 @@
+{
+  "type": "record",
+  "name": "PaymentAuthorized",
+  "namespace": "com.retailpulse.events.payments.v1",
+  "doc": "Emitted when a payment attempt is authorized by a payment provider.",
+  "fields": [
+    {
+      "name": "event_id",
+      "type": "string",
+      "doc": "Globally unique identifier of the event."
+    },
+    {
+      "name": "event_type",
+      "type": {
+        "type": "enum",
+        "name": "PaymentAuthorizedEventType",
+        "symbols": [
+          "payment_authorized"
+        ]
+      },
+      "doc": "Business type of the event."
+    },
+    {
+      "name": "event_version",
+      "type": "int",
+      "default": 1,
+      "doc": "Logical version of the event contract."
+    },
+    {
+      "name": "event_time",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      },
+      "doc": "Timestamp at which the authorization occurred."
+    },
+    {
+      "name": "produced_at",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      },
+      "doc": "Timestamp at which the event was published."
+    },
+    {
+      "name": "producer",
+      "type": "string",
+      "doc": "Application that produced the event."
+    },
+    {
+      "name": "correlation_id",
+      "type": "string",
+      "doc": "Order identifier used to correlate payment events."
+    },
+    {
+      "name": "trace_id",
+      "type": [
+        "null",
+        "string"
+      ],
+      "default": null,
+      "doc": "Optional distributed tracing identifier."
+    },
+    {
+      "name": "payload",
+      "type": {
+        "type": "record",
+        "name": "PaymentAuthorizedPayload",
+        "fields": [
+          {
+            "name": "payment_id",
+            "type": "string",
+            "doc": "Unique identifier of the payment attempt."
+          },
+          {
+            "name": "order_id",
+            "type": "string",
+            "doc": "Identifier of the associated order."
+          },
+          {
+            "name": "attempt_number",
+            "type": "int",
+            "doc": "Sequential payment attempt number for the order."
+          },
+          {
+            "name": "authorized_amount_minor",
+            "type": "long",
+            "doc": "Authorized amount expressed in the minor currency unit."
+          },
+          {
+            "name": "currency",
+            "type": "string",
+            "doc": "Three-letter uppercase currency code."
+          },
+          {
+            "name": "payment_provider",
+            "type": "string",
+            "doc": "Name of the synthetic payment provider."
+          },
+          {
+            "name": "provider_authorization_id",
+            "type": "string",
+            "doc": "Authorization identifier assigned by the payment provider."
+          },
+          {
+            "name": "authorization_expires_at",
+            "type": {
+              "type": "long",
+              "logicalType": "timestamp-millis"
+            },
+            "doc": "Timestamp at which the authorization expires."
+          }
+        ]
+      }
+    }
+  ]
+}

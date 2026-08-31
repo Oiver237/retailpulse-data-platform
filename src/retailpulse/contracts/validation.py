@@ -134,3 +134,65 @@ def validate_order_created_business_rules(event: Event) -> None:
         raise ContractValidationError(
             "total_amount_minor does not match the expected total."
         )
+
+
+def validate_payment_authorized_business_rules(event: Event) -> None:
+    """Validate the business rules of a payment_authorized event."""
+
+    if event.get("event_type") != "payment_authorized":
+        raise ContractValidationError("Expected event_type='payment_authorized'.")
+
+    if event.get("event_version") != 1:
+        raise ContractValidationError("Expected event_version=1.")
+
+    event_id = str(event["event_id"])
+    correlation_id = str(event["correlation_id"])
+    event_time = int(event["event_time"])
+    produced_at = int(event["produced_at"])
+    payload = event["payload"]
+
+    validate_uuid(event_id, "event_id")
+    validate_uuid(correlation_id, "correlation_id")
+
+    if not isinstance(payload, Mapping):
+        raise ContractValidationError("payload must be an object.")
+
+    payment_id = str(payload["payment_id"])
+    order_id = str(payload["order_id"])
+    attempt_number = int(payload["attempt_number"])
+    authorized_amount = int(payload["authorized_amount_minor"])
+    currency = str(payload["currency"])
+    payment_provider = str(payload["payment_provider"]).strip()
+    provider_authorization_id = str(payload["provider_authorization_id"]).strip()
+    authorization_expires_at = int(payload["authorization_expires_at"])
+
+    validate_uuid(payment_id, "payload.payment_id")
+    validate_uuid(order_id, "payload.order_id")
+    validate_currency(currency)
+
+    if correlation_id != order_id:
+        raise ContractValidationError("correlation_id must match payload.order_id.")
+
+    if attempt_number < 1:
+        raise ContractValidationError(
+            "attempt_number must be greater than or equal to 1."
+        )
+
+    if authorized_amount <= 0:
+        raise ContractValidationError(
+            "authorized_amount_minor must be strictly positive."
+        )
+
+    if produced_at < event_time:
+        raise ContractValidationError("produced_at must not precede event_time.")
+
+    if authorization_expires_at <= event_time:
+        raise ContractValidationError(
+            "authorization_expires_at must be later than event_time."
+        )
+
+    if not payment_provider:
+        raise ContractValidationError("payment_provider must not be empty.")
+
+    if not provider_authorization_id:
+        raise ContractValidationError("provider_authorization_id must not be empty.")
