@@ -1,0 +1,257 @@
+contract:
+  name: payments
+  version: 1.0.0
+  status: active
+  domain: payments
+  owner: retailpulse-data-platform
+  technical_contact: data-engineering
+  description: >
+    Payment attempts and their current operational status extracted
+    incrementally from the RetailPulse transactional database.
+
+source:
+  type: postgresql
+  system: retailpulse-oltp
+  schema: public
+  table: payments
+  extraction_mode: incremental
+  incremental_column: updated_at
+  primary_key:
+    - payment_id
+
+delivery:
+  format: parquet
+  layer: bronze
+  frequency: hourly
+  expected_delay_minutes: 30
+  partition_columns:
+    - ingestion_date
+
+schema:
+  fields:
+    - name: payment_id
+      type: string
+      required: true
+      unique: true
+      description: >
+        Stable identifier of a payment attempt represented as a UUID.
+
+    - name: order_id
+      type: string
+      required: true
+      description: >
+        Identifier of the order associated with the payment attempt.
+
+    - name: attempt_number
+      type: integer
+      required: true
+      minimum: 1
+      description: >
+        Sequential payment attempt number for the associated order.
+
+    - name: status
+      type: string
+      required: true
+      accepted_values:
+        - INITIATED
+        - AUTHORIZED
+        - DECLINED
+        - CAPTURED
+        - PARTIALLY_REFUNDED
+        - REFUNDED
+      description: Current operational status of the payment attempt.
+
+    - name: amount_minor
+      type: long
+      required: true
+      minimum: 1
+      description: >
+        Payment amount represented in the minor unit of the currency.
+        For example, 1999 represents 19.99 EUR.
+
+    - name: currency
+      type: string
+      required: true
+      pattern: "^[A-Z]{3}$"
+      description: >
+        Three-letter uppercase currency code, such as EUR or USD.
+
+    - name: payment_method
+      type: string
+      required: true
+      accepted_values:
+        - card
+        - wallet
+        - bank_transfer
+        - gift_card
+      description: Payment method selected by the customer.
+
+    - name: payment_provider
+      type: string
+      required: true
+      description: >
+        Technical name of the synthetic payment service provider.
+
+    - name: provider_transaction_id
+      type: string
+      required: false
+      description: >
+        Synthetic transaction identifier assigned by the payment provider.
+
+    - name: decline_category
+      type: string
+      required: false
+      accepted_values:
+        - insufficient_funds
+        - authentication_failed
+        - provider_unavailable
+        - invalid_payment_method
+        - suspected_fraud
+        - unknown
+      description: >
+        Normalized decline category. Populated only when the payment
+        status is DECLINED.
+
+    - name: retryable
+      type: boolean
+      required: false
+      description: >
+        Indicates whether another payment attempt may reasonably be made.
+
+    - name: authorized_at
+      type: timestamp
+      required: false
+      description: Timestamp at which the payment was authorized.
+
+    - name: captured_at
+      type: timestamp
+      required: false
+      description: Timestamp at which the payment was captured.
+
+    - name: created_at
+      type: timestamp
+      required: true
+      description: Timestamp at which the payment attempt was created.
+
+    - name: updated_at
+      type: timestamp
+      required: true
+      description: Timestamp of the latest operational update.
+
+quality:
+  - name: payment_id_not_null
+    description: Every payment record must have an identifier.
+    dimension: completeness
+    severity: error
+    field: payment_id
+
+  - name: payment_id_unique
+    description: A payment identifier must identify one payment attempt.
+    dimension: uniqueness
+    severity: error
+    field: payment_id
+
+  - name: order_id_not_null
+    description: Every payment must reference an order.
+    dimension: completeness
+    severity: error
+    field: order_id
+
+  - name: order_relationship
+    description: The referenced order must exist in the orders dataset.
+    dimension: integrity
+    severity: error
+    field: order_id
+    references:
+      dataset: orders
+      field: order_id
+
+  - name: positive_amount
+    description: Payment amounts must be strictly positive.
+    dimension: validity
+    severity: error
+    field: amount_minor
+    minimum: 1
+
+  - name: accepted_payment_status
+    description: Payment status must belong to the supported lifecycle.
+    dimension: validity
+    severity: error
+    field: status
+
+  - name: updated_after_created
+    description: The update timestamp must not precede creation.
+    dimension: consistency
+    severity: error
+    expression: "updated_at >= created_at"
+
+  - name: declined_payment_has_category
+    description: A declined payment must have a normalized decline category.
+    dimension: consistency
+    severity: error
+    expression: "status != 'DECLINED' OR decline_category IS NOT NULL"
+
+  - name: captured_payment_has_timestamp
+    description: A captured payment must have a capture timestamp.
+    dimension: consistency
+    severity: error
+    expression: "status != 'CAPTURED' OR captured_at IS NOT NULL"
+
+  - name: authorized_payment_has_timestamp
+    description: An authorized payment must have an authorization timestamp.
+    dimension: consistency
+    severity: error
+    expression: "status != 'AUTHORIZED' OR authorized_at IS NOT NULL"
+
+  - name: payment_freshness
+    description: Payment data should arrive within the expected interval.
+    dimension: freshness
+    severity: warning
+    maximum_delay_minutes: 60
+    timestamp_field: updated_at
+
+  - name: hourly_volume
+    description: Detect an unexpected hourly payment volume.
+    dimension: volume
+    severity: warning
+    minimum: 1
+    maximum: 1000000
+
+classification:
+  contains_personal_data: false
+  contains_payment_card_data: false
+  sensitivity: confidential
+  forbidden_fields:
+    - card_number
+    - card_security_code
+    - cvv
+    - cvc
+    - authentication_token
+    - api_key
+    - customer_password
+
+retention:
+  bronze_days: 90
+  silver_days: 730
+  gold_days: 2555
+
+compatibility:
+  mode: backward
+  deprecation_notice_days: 30
+  breaking_changes_require_major_version: true
+
+ownership:
+  producer: payment-service
+  consumers:
+    - batch-ingestion
+    - spark-payment-processing
+    - payment-reconciliation
+    - dbt-payment-models
+    - payment-monitoring
+
+operational_metadata:
+  replay_supported: true
+  idempotency_key:
+    - payment_id
+  reconciliation_dataset: orders
+  late_arrival_tolerance_minutes: 120

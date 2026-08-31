@@ -1,6 +1,6 @@
 PYTHON := python
 
-.PHONY: help install format format-check lint type-check test coverage quality clean
+.PHONY: help install format format-check lint type-check test coverage contracts quality clean
 
 help:
 	@echo "RetailPulse development commands"
@@ -11,6 +11,8 @@ help:
 	@echo "  make lint          Run Ruff"
 	@echo "  make type-check    Run MyPy"
 	@echo "  make test          Run unit tests"
+	@echo "  make contracts     Run contract tests"
+	@echo "  make coverage      Run all tests with coverage"
 	@echo "  make quality       Run all local quality checks"
 	@echo "  make clean         Remove generated local artifacts"
 
@@ -33,6 +35,12 @@ type-check:
 
 test:
 	$(PYTHON) -m pytest tests/unit
+
+contracts:
+	$(PYTHON) -m pytest \
+		tests/unit/test_contract_loader.py \
+		tests/unit/test_contract_validation.py \
+		--no-cov
 
 coverage:
 	$(PYTHON) -m pytest

@@ -1,0 +1,98 @@
+{
+  "type": "record",
+  "name": "PaymentInitiated",
+  "namespace": "com.retailpulse.events.payments.v1",
+  "doc": "Emitted when a payment attempt starts.",
+  "fields": [
+    {
+      "name": "event_id",
+      "type": "string"
+    },
+    {
+      "name": "event_type",
+      "type": {
+        "type": "enum",
+        "name": "PaymentInitiatedEventType",
+        "symbols": ["payment_initiated"]
+      }
+    },
+    {
+      "name": "event_version",
+      "type": "int",
+      "default": 1
+    },
+    {
+      "name": "event_time",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      }
+    },
+    {
+      "name": "produced_at",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      }
+    },
+    {
+      "name": "producer",
+      "type": "string"
+    },
+    {
+      "name": "correlation_id",
+      "type": "string"
+    },
+    {
+      "name": "trace_id",
+      "type": ["null", "string"],
+      "default": null
+    },
+    {
+      "name": "payload",
+      "type": {
+        "type": "record",
+        "name": "PaymentInitiatedPayload",
+        "fields": [
+          {
+            "name": "payment_id",
+            "type": "string"
+          },
+          {
+            "name": "order_id",
+            "type": "string"
+          },
+          {
+            "name": "attempt_number",
+            "type": "int"
+          },
+          {
+            "name": "amount_minor",
+            "type": "long"
+          },
+          {
+            "name": "currency",
+            "type": "string"
+          },
+          {
+            "name": "payment_method",
+            "type": {
+              "type": "enum",
+              "name": "PaymentMethod",
+              "symbols": [
+                "card",
+                "wallet",
+                "bank_transfer",
+                "gift_card"
+              ]
+            }
+          },
+          {
+            "name": "payment_provider",
+            "type": "string"
+          }
+        ]
+      }
+    }
+  ]
+}

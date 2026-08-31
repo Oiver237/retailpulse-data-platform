@@ -1,0 +1,60 @@
+contract:
+  name: order-events
+  version: 1.0.0
+  status: active
+  domain: commerce
+  owner: commerce-platform
+  technical_contact: data-engineering
+
+transport:
+  platform: kafka
+  topic: retail.order.events.v1
+  key_field: payload.order_id
+  serialization: avro
+  compatibility: backward_transitive
+
+producer:
+  name: checkout-service
+  responsibility:
+    - publish valid order lifecycle events
+    - generate globally unique event identifiers
+    - preserve business event timestamps
+    - avoid exposing sensitive customer data
+
+consumers:
+  - name: spark-order-stream
+    purpose: persist and normalize order events
+
+  - name: order-monitoring
+    purpose: calculate operational event metrics
+
+service_levels:
+  expected_peak_events_per_second: 100
+  maximum_producer_delay_seconds: 30
+  expected_availability_percent: 99.0
+
+quality:
+  maximum_duplicate_rate_percent: 1.0
+  maximum_invalid_rate_percent: 0.5
+  required_fields:
+    - event_id
+    - event_type
+    - event_time
+    - produced_at
+    - producer
+    - correlation_id
+    - payload.order_id
+
+retention:
+  kafka_days: 7
+  bronze_days: 90
+
+classification:
+  sensitivity: confidential
+  personal_data_allowed: false
+  credentials_allowed: false
+  payment_card_data_allowed: false
+
+lifecycle:
+  deprecation_notice_days: 30
+  breaking_changes_require_new_topic: true
