@@ -50,6 +50,6 @@ jobs:
 
       - name: Validate data contracts
         run: |
-          python -m pytest \
+          python -m pytest --no-cov \
             tests/unit/test_contract_loader.py \
             tests/unit/test_contract_validation.py
