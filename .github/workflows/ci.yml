@@ -47,3 +47,9 @@ jobs:
 
       - name: Run unit tests
         run: python -m pytest
+
+      - name: Validate data contracts
+        run: |
+          python -m pytest --no-cov \
+            tests/unit/test_contract_loader.py \
+            tests/unit/test_contract_validation.py

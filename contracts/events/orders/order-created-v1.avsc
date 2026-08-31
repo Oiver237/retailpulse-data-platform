@@ -1,0 +1,157 @@
+{
+  "type": "record",
+  "name": "OrderCreated",
+  "namespace": "com.retailpulse.events.orders.v1",
+  "doc": "Emitted when an order is created.",
+  "fields": [
+    {
+      "name": "event_id",
+      "type": "string",
+      "doc": "Unique identifier of the event."
+    },
+    {
+      "name": "event_type",
+      "type": {
+        "type": "enum",
+        "name": "OrderCreatedEventType",
+        "symbols": ["order_created"]
+      }
+    },
+    {
+      "name": "event_version",
+      "type": "int",
+      "default": 1
+    },
+    {
+      "name": "event_time",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      }
+    },
+    {
+      "name": "produced_at",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      }
+    },
+    {
+      "name": "producer",
+      "type": "string"
+    },
+    {
+      "name": "correlation_id",
+      "type": "string"
+    },
+    {
+      "name": "trace_id",
+      "type": ["null", "string"],
+      "default": null
+    },
+    {
+      "name": "payload",
+      "type": {
+        "type": "record",
+        "name": "OrderCreatedPayload",
+        "fields": [
+          {
+            "name": "order_id",
+            "type": "string"
+          },
+          {
+            "name": "customer_id",
+            "type": ["null", "string"],
+            "default": null
+          },
+          {
+            "name": "session_id",
+            "type": ["null", "string"],
+            "default": null
+          },
+          {
+            "name": "channel",
+            "type": {
+              "type": "enum",
+              "name": "SalesChannel",
+              "symbols": [
+                "web",
+                "mobile",
+                "marketplace",
+                "store"
+              ]
+            }
+          },
+          {
+            "name": "currency",
+            "type": "string"
+          },
+          {
+            "name": "subtotal_amount_minor",
+            "type": "long"
+          },
+          {
+            "name": "discount_amount_minor",
+            "type": "long",
+            "default": 0
+          },
+          {
+            "name": "shipping_amount_minor",
+            "type": "long",
+            "default": 0
+          },
+          {
+            "name": "tax_amount_minor",
+            "type": "long",
+            "default": 0
+          },
+          {
+            "name": "total_amount_minor",
+            "type": "long"
+          },
+          {
+            "name": "items",
+            "type": {
+              "type": "array",
+              "items": {
+                "type": "record",
+                "name": "OrderItem",
+                "fields": [
+                  {
+                    "name": "order_item_id",
+                    "type": "string"
+                  },
+                  {
+                    "name": "product_id",
+                    "type": "string"
+                  },
+                  {
+                    "name": "quantity",
+                    "type": "int"
+                  },
+                  {
+                    "name": "unit_price_amount_minor",
+                    "type": "long"
+                  },
+                  {
+                    "name": "discount_amount_minor",
+                    "type": "long",
+                    "default": 0
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "name": "promotion_codes",
+            "type": {
+              "type": "array",
+              "items": "string"
+            },
+            "default": []
+          }
+        ]
+      }
+    }
+  ]
+}

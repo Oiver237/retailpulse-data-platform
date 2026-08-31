@@ -1,0 +1,85 @@
+{
+  "type": "record",
+  "name": "PaymentCaptured",
+  "namespace": "com.retailpulse.events.payments.v1",
+  "doc": "Emitted when an authorized payment is captured.",
+  "fields": [
+    {
+      "name": "event_id",
+      "type": "string"
+    },
+    {
+      "name": "event_type",
+      "type": {
+        "type": "enum",
+        "name": "PaymentCapturedEventType",
+        "symbols": ["payment_captured"]
+      }
+    },
+    {
+      "name": "event_version",
+      "type": "int",
+      "default": 1
+    },
+    {
+      "name": "event_time",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      }
+    },
+    {
+      "name": "produced_at",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      }
+    },
+    {
+      "name": "producer",
+      "type": "string"
+    },
+    {
+      "name": "correlation_id",
+      "type": "string"
+    },
+    {
+      "name": "trace_id",
+      "type": ["null", "string"],
+      "default": null
+    },
+    {
+      "name": "payload",
+      "type": {
+        "type": "record",
+        "name": "PaymentCapturedPayload",
+        "fields": [
+          {
+            "name": "payment_id",
+            "type": "string"
+          },
+          {
+            "name": "order_id",
+            "type": "string"
+          },
+          {
+            "name": "authorized_amount_minor",
+            "type": "long"
+          },
+          {
+            "name": "captured_amount_minor",
+            "type": "long"
+          },
+          {
+            "name": "currency",
+            "type": "string"
+          },
+          {
+            "name": "provider_transaction_id",
+            "type": "string"
+          }
+        ]
+      }
+    }
+  ]
+}

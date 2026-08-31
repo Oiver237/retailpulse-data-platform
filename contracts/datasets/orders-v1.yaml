@@ -1,0 +1,122 @@
+contract:
+  name: orders
+  version: 1.0.0
+  status: active
+  domain: commerce
+  owner: retailpulse-data-platform
+  technical_contact: data-engineering
+  description: >
+    Operational order records extracted incrementally from the RetailPulse
+    transactional database.
+
+source:
+  type: postgresql
+  system: retailpulse-oltp
+  table: public.orders
+  extraction_mode: incremental
+  incremental_column: updated_at
+  primary_key:
+    - order_id
+
+delivery:
+  format: parquet
+  layer: bronze
+  frequency: hourly
+  expected_delay_minutes: 30
+  partition_columns:
+    - ingestion_date
+
+schema:
+  fields:
+    - name: order_id
+      type: string
+      required: true
+      unique: true
+      description: Stable order identifier.
+
+    - name: customer_id
+      type: string
+      required: false
+      description: Customer identifier, null for some guest orders.
+
+    - name: session_id
+      type: string
+      required: false
+      description: Digital session attributed to the order.
+
+    - name: channel
+      type: string
+      required: true
+      accepted_values:
+        - web
+        - mobile
+        - marketplace
+        - store
+
+    - name: status
+      type: string
+      required: true
+      accepted_values:
+        - CREATED
+        - PENDING_PAYMENT
+        - CONFIRMED
+        - PROCESSING
+        - SHIPPED
+        - DELIVERED
+        - CANCELLED
+        - RETURNED
+
+    - name: currency
+      type: string
+      required: true
+      pattern: "^[A-Z]{3}$"
+
+    - name: total_amount_minor
+      type: long
+      required: true
+      minimum: 0
+
+    - name: created_at
+      type: timestamp
+      required: true
+
+    - name: updated_at
+      type: timestamp
+      required: true
+
+quality:
+  - name: order_id_not_null
+    dimension: completeness
+    severity: error
+
+  - name: order_id_unique
+    dimension: uniqueness
+    severity: error
+
+  - name: status_accepted
+    dimension: validity
+    severity: error
+
+  - name: updated_after_created
+    dimension: consistency
+    severity: error
+
+  - name: hourly_volume
+    dimension: volume
+    severity: warning
+    minimum: 1
+    maximum: 1000000
+
+classification:
+  contains_personal_data: true
+  contains_payment_card_data: false
+  sensitivity: confidential
+
+retention:
+  bronze_days: 90
+  silver_days: 365
+  gold_days: 730
+
+compatibility:
+  mode: backward
+  deprecation_notice_days: 30

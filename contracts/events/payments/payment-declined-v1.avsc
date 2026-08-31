@@ -1,0 +1,105 @@
+{
+  "type": "record",
+  "name": "PaymentDeclined",
+  "namespace": "com.retailpulse.events.payments.v1",
+  "doc": "Emitted when a payment attempt is declined.",
+  "fields": [
+    {
+      "name": "event_id",
+      "type": "string"
+    },
+    {
+      "name": "event_type",
+      "type": {
+        "type": "enum",
+        "name": "PaymentDeclinedEventType",
+        "symbols": ["payment_declined"]
+      }
+    },
+    {
+      "name": "event_version",
+      "type": "int",
+      "default": 1
+    },
+    {
+      "name": "event_time",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      }
+    },
+    {
+      "name": "produced_at",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      }
+    },
+    {
+      "name": "producer",
+      "type": "string"
+    },
+    {
+      "name": "correlation_id",
+      "type": "string"
+    },
+    {
+      "name": "trace_id",
+      "type": ["null", "string"],
+      "default": null
+    },
+    {
+      "name": "payload",
+      "type": {
+        "type": "record",
+        "name": "PaymentDeclinedPayload",
+        "fields": [
+          {
+            "name": "payment_id",
+            "type": "string"
+          },
+          {
+            "name": "order_id",
+            "type": "string"
+          },
+          {
+            "name": "attempt_number",
+            "type": "int"
+          },
+          {
+            "name": "amount_minor",
+            "type": "long"
+          },
+          {
+            "name": "currency",
+            "type": "string"
+          },
+          {
+            "name": "decline_category",
+            "type": {
+              "type": "enum",
+              "name": "DeclineCategory",
+              "symbols": [
+                "insufficient_funds",
+                "authentication_failed",
+                "provider_unavailable",
+                "invalid_payment_method",
+                "suspected_fraud",
+                "unknown"
+              ]
+            }
+          },
+          {
+            "name": "retryable",
+            "type": "boolean"
+          },
+          {
+            "name": "provider_reason_code",
+            "type": ["null", "string"],
+            "default": null
+          }
+        ]
+      }
+    }
+  ]
+}

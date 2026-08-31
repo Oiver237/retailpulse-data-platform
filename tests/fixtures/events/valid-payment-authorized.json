@@ -1,0 +1,20 @@
+{
+  "event_id": "d8c19a32-af92-430c-8bff-ac55f036b46d",
+  "event_type": "payment_authorized",
+  "event_version": 1,
+  "event_time": 1788170400000,
+  "produced_at": 1788170401000,
+  "producer": "payment-service",
+  "correlation_id": "94aef160-9f5a-4345-a7c4-ba706a129542",
+  "trace_id": "70df5609-77fa-45da-88f6-dfdbe51c753c",
+  "payload": {
+    "payment_id": "c1db0c2d-0d4c-4288-967a-094020b40f80",
+    "order_id": "94aef160-9f5a-4345-a7c4-ba706a129542",
+    "attempt_number": 2,
+    "authorized_amount_minor": 11400,
+    "currency": "EUR",
+    "payment_provider": "synthetic-pay",
+    "provider_authorization_id": "auth_8c49081f",
+    "authorization_expires_at": 1788174000000
+  }
+}

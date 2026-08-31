@@ -1,0 +1,34 @@
+{
+  "event_id": "b34c2ceb-00a0-44ac-80c5-d4fbe2bde5df",
+  "event_type": "order_created",
+  "event_version": 1,
+  "event_time": 1788112800000,
+  "produced_at": 1788112801000,
+  "producer": "checkout-service",
+  "correlation_id": "94aef160-9f5a-4345-a7c4-ba706a129542",
+  "trace_id": "f4069dc8-cf60-4858-8d52-a97f79e37f6a",
+  "payload": {
+    "order_id": "94aef160-9f5a-4345-a7c4-ba706a129542",
+    "customer_id": "7c6cf22b-6f2e-4486-a90f-e6f037eeaf89",
+    "session_id": "61f7560f-488e-42ba-8980-a34ec5f30066",
+    "channel": "web",
+    "currency": "EUR",
+    "subtotal_amount_minor": 10000,
+    "discount_amount_minor": 1000,
+    "shipping_amount_minor": 500,
+    "tax_amount_minor": 1900,
+    "total_amount_minor": 11400,
+    "items": [
+      {
+        "order_item_id": "f0c62ba0-a721-4a16-917e-3ce5bada6bc3",
+        "product_id": "45f7220d-c141-4fbf-83cf-b94418c859ad",
+        "quantity": 2,
+        "unit_price_amount_minor": 5000,
+        "discount_amount_minor": 1000
+      }
+    ],
+    "promotion_codes": [
+      "WELCOME10"
+    ]
+  }
+}
