@@ -37,6 +37,11 @@ def build_parser() -> argparse.ArgumentParser:
         type=int,
         default=500,
     )
+    parser.add_argument(
+        "--currency",
+        default="EUR",
+        help="Three-letter uppercase currency code, for example EUR or USD.",
+    )
     return parser
 
 
@@ -51,6 +56,7 @@ def main() -> None:
         customer_count=arguments.customers,
         product_count=arguments.products,
         order_count=arguments.orders,
+        currency=arguments.currency,
     )
 
     dataset = DataGenerator(config).generate()

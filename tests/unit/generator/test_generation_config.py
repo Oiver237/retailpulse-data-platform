@@ -58,3 +58,21 @@ def test_configuration_rejects_invalid_currency() -> None:
         match="currency must contain three uppercase letters",
     ):
         GenerationConfig(currency="eur")
+
+
+def test_configuration_accepts_usd_currency() -> None:
+    """USD should be accepted as a generation currency."""
+
+    config = GenerationConfig(currency="USD")
+
+    assert config.currency == "USD"
+
+
+def test_configuration_rejects_lowercase_currency() -> None:
+    """A lowercase currency code should be rejected."""
+
+    with pytest.raises(
+        ValueError,
+        match="currency must contain three uppercase letters",
+    ):
+        GenerationConfig(currency="eur")

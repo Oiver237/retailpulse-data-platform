@@ -99,6 +99,6 @@ exclude_lines = [
 [project.scripts]
 retailpulse-generate = "retailpulse.generator.cli:main"
 
-omit = [
-    "src/retailpulse/generator/cli.py"
-]
+# omit = [
+#     "src/retailpulse/generator/cli.py"
+# ]

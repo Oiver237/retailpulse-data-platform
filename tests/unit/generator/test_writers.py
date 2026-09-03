@@ -227,3 +227,30 @@ def test_written_order_events_are_valid_json_lines(
 
     assert len(events) == 4
     assert all(event["event_type"] == "order_created" for event in events)
+
+
+def test_write_dataset_manifest_contains_currency(
+    tmp_path: Path,
+) -> None:
+    """The manifest should expose the configured currency."""
+
+    config = GenerationConfig(
+        seed=42,
+        run_id="manifest-usd-test",
+        currency="USD",
+        customer_count=3,
+        category_count=2,
+        product_count=4,
+        order_count=5,
+    )
+    dataset = DataGenerator(config).generate()
+
+    manifest_path = write_dataset(
+        dataset,
+        config,
+        tmp_path,
+    )
+    manifest = load_json_object(manifest_path)
+
+    assert manifest["run_id"] == "manifest-usd-test"
+    assert manifest["currency"] == "USD"

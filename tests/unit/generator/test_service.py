@@ -125,3 +125,46 @@ def test_generated_payment_events_respect_contracts() -> None:
     for event in dataset.payment_events:
         validate_avro_event(event, schema)
         validate_payment_authorized_business_rules(event)
+
+
+def test_generated_products_use_configured_currency() -> None:
+    """Products should use the configured currency."""
+
+    config = GenerationConfig(
+        currency="USD",
+        customer_count=5,
+        category_count=2,
+        product_count=10,
+        order_count=10,
+    )
+
+    dataset = DataGenerator(config).generate()
+
+    assert dataset.products
+    assert all(product.currency == "USD" for product in dataset.products)
+
+
+def test_usd_events_respect_avro_and_business_contracts() -> None:
+    """USD events should continue to satisfy their contracts."""
+
+    order_schema = load_json_contract(SCHEMA_ROOT / "orders" / "order-created-v1.avsc")
+    payment_schema = load_json_contract(
+        SCHEMA_ROOT / "payments" / "payment-authorized-v1.avsc"
+    )
+
+    config = GenerationConfig(
+        currency="USD",
+        customer_count=5,
+        category_count=2,
+        product_count=10,
+        order_count=10,
+    )
+    dataset = DataGenerator(config).generate()
+
+    for event in dataset.order_events:
+        validate_avro_event(event, order_schema)
+        validate_order_created_business_rules(event)
+
+    for event in dataset.payment_events:
+        validate_avro_event(event, payment_schema)
+        validate_payment_authorized_business_rules(event)

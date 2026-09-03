@@ -91,6 +91,7 @@ def write_dataset(
         "run_id": config.run_id,
         "seed": config.seed,
         "profile": "tiny",
+        "currency": config.currency,
         "generated_at": config.start_time.isoformat(),
         "counts": counts,
     }
