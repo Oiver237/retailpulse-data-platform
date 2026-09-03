@@ -15,6 +15,8 @@ help:
 	@echo "  make coverage      Run all tests with coverage"
 	@echo "  make quality       Run all local quality checks"
 	@echo "  make clean         Remove generated local artifacts"
+	@echo "  make generate-tiny Generate the Tiny synthetic dataset"
+	@echo "  make test-generator Run generator unit tests"
 
 install:
 	$(PYTHON) -m pip install --upgrade pip
@@ -51,3 +53,15 @@ quality: format-check lint type-check coverage
 clean:
 	rm -rf .coverage .mypy_cache .pytest_cache .ruff_cache htmlcov
 	find . -type d -name "__pycache__" -prune -exec rm -rf {} +
+
+.PHONY: generate-tiny test-generator
+
+generate-tiny:
+	$(PYTHON) -m retailpulse.generator.cli \
+		--run-id tiny-seed-42 \
+		--customers 100 \
+		--products 50 \
+		--orders 500
+
+test-generator:
+	$(PYTHON) -m pytest tests/unit/generator --no-cov

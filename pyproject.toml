@@ -22,7 +22,9 @@ keywords = [
     "dbt"
 ]
 
-dependencies = []
+dependencies = [
+    "Faker>=30,<40"
+]
 
 [project.optional-dependencies]
 dev = [
@@ -93,3 +95,10 @@ exclude_lines = [
     "if TYPE_CHECKING:",
     "if __name__ == .__main__.:"
 ]
+
+[project.scripts]
+retailpulse-generate = "retailpulse.generator.cli:main"
+
+# omit = [
+#     "src/retailpulse/generator/cli.py"
+# ]
